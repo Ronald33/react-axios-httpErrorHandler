@@ -47,15 +47,10 @@ import HttpErrorHandler from '@/lib/httpErrorHandler'
 HttpErrorHandler.registerApi(api)
 HttpErrorHandler.setTrigger((error) =>
 {
-    if(error.response?.status === 400)
-    { 
-        /* ... */
-        return; 
-    }
-
-    console.log('Ocurrió un error', error)
-})
-
+    const status = error.response?.status ?? error.status
+    if(status === 400) { return; }
+    toast.error("An error occurred while processing your request.");
+});
 ```
 
 ### 3. Importar `config.js` en `main.jsx`
