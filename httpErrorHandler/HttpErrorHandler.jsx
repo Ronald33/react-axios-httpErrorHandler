@@ -10,7 +10,7 @@ HttpErrorHandler.registerApi = (axiosInstance) =>
         {
             const disabled = error.config?._disableErrorHandler
 
-            if(!disabled && _triggerFn) { _triggerFn() }
+            if(!disabled && _triggerFn) { _triggerFn(error) }
 
             return Promise.reject(error)
         }

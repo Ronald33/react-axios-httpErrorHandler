@@ -13,7 +13,7 @@ Plugin de manejo de errores HTTP automático para Axios.
 ## Archivos
 
 ```
-HttpErrorHandler/
+httpErrorHandler/
 └── HttpErrorHandler.jsx
 └── index.js
 ```
@@ -42,10 +42,20 @@ export default api
 ```js
 // config.js
 import api from "./api"
-import HttpErrorHandler from "./HttpErrorHandler"
+import HttpErrorHandler from '@/lib/httpErrorHandler'
 
 HttpErrorHandler.registerApi(api)
-HttpErrorHandler.setTrigger(() => console.log('Ocurrió un error')) // Acá es donde definirás la función que se ejecutará cada que falle el HTTP request
+HttpErrorHandler.setTrigger((error) =>
+{
+    if(error.response?.status === 400)
+    { 
+        /* ... */
+        return; 
+    }
+
+    console.log('Ocurrió un error', error)
+})
+
 ```
 
 ### 3. Importar `config.js` en `main.jsx`
@@ -94,12 +104,17 @@ Si no se pasa, el valor por defecto es `false` y el trigger se ejecuta.
 
 ## Ejemplos de uso con distintas librerías
 
+La función recibe el objeto `error` de Axios, lo que permite tomar decisiones según el tipo de error antes de mostrar cualquier notificación.
+
 ### Sonner
 
 ```js
 import { toast } from "sonner"
 
-HttpErrorHandler.setTrigger(() => toast.error("An error occurred while processing your request."))
+HttpErrorHandler.setTrigger((error) =>
+{
+    toast.error("An error occurred while processing your request.")
+})
 ```
 
 ### react-toastify
@@ -107,24 +122,19 @@ HttpErrorHandler.setTrigger(() => toast.error("An error occurred while processin
 ```js
 import { toast } from "react-toastify"
 
-HttpErrorHandler.setTrigger(() => toast.error("An error occurred while processing your request."))
-```
-
-### Función propia
-
-```js
-HttpErrorHandler.setTrigger(() => console.error("Request failed"))
+HttpErrorHandler.setTrigger((error) =>
+{
+    toast.error("An error occurred while processing your request.")
+})
 ```
 
 ---
-
 
 ## Notas importantes
 
 - El plugin es completamente autónomo: no depende de ninguna utilidad del proyecto.
 - No renderiza nada en el DOM.
 - Si no se llama a `setTrigger()`, el plugin no hace nada al ocurrir un error.
-<!-- - `HttpErrorHandler.registerApi` puede llamarse con múltiples instancias de Axios si el proyecto las tiene. -->
 
 ---
 
