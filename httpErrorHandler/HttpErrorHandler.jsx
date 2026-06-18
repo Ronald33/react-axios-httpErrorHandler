@@ -15,12 +15,16 @@ HttpErrorHandler.registerApi = (axiosInstance) =>
     axiosInstance.interceptors.response.use(
         (response) =>
         {
-            if(validateStatus?.(response.status)) { handle(response.config, response) }
+            if(!validateStatus?.(response.status)) { handle(response.config, response) }
             return response
         },
         (error) =>
         {
-            if(!validateStatus?.(error.response?.status)) { handle(error.config, error) }
+            const isNetworkError = !error.response
+            if(isNetworkError || !validateStatus?.(error.response?.status))
+            {
+                handle(error.config, error)
+            }
             return Promise.reject(error)
         }
     )
